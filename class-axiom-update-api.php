@@ -89,9 +89,9 @@ class AxiomUpdateAPI {
 
 		// Add your templates to this array.
 		$this->templates = array(
-			'template-update-api.php'     => __( 'Update api', $this->plugin_slug )
+			'template-update-api.php'     => __( 'Update - API', $this->plugin_slug )
 		);
-
+		
 
 	} // end constructor
 
