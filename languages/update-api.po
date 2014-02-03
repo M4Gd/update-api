@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Page Template Plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-03 22:48+0330\n"
-"PO-Revision-Date: 2014-02-03 22:48+0330\n"
+"POT-Creation-Date: 2014-02-03 23:09+0330\n"
+"PO-Revision-Date: 2014-02-03 23:09+0330\n"
 "Last-Translator: Tom McFarlin <tom@tommcfarlin.com>\n"
 "Language-Team: Tom McFarlin <tom@tommcfarlin.com>\n"
 "Language: en_US\n"
@@ -17,7 +17,7 @@ msgstr ""
 "X-Poedit-SearchPath-0: ..\n"
 
 #: ../class-axiom-update-api.php:92
-msgid "Update api"
+msgid "Update - API"
 msgstr ""
 
 #: ../templates/template-update-api.php:109
