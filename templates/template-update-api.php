@@ -8,7 +8,7 @@ global $post;
 if ( isset( $_GET['forum_stats'] ) && function_exists('bbp_get_statistics') ) {
 	$stats = bbp_get_statistics();
 	echo json_encode($stats);
-	die();
+	die;
 }
 
 
