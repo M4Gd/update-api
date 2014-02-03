@@ -17,7 +17,7 @@ class AxiomUpdateAPI {
      *
      * @var     string
      */
-    const VERSION = '1.0.0';
+    const VERSION = '1.0.1';
 
     /**
      * Unique identifier for the plugin.
@@ -91,7 +91,7 @@ class AxiomUpdateAPI {
 		$this->templates = array(
 			'template-update-api.php'     => __( 'Update - API', $this->plugin_slug )
 		);
-		
+
 
 	} // end constructor
 
