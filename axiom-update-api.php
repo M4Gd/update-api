@@ -9,7 +9,7 @@
  * @copyright 2014 averta
  *
  * @wordpress-plugin
- * Plugin Name:       Averta Update API
+ * Plugin Name:       Update API
  * Plugin URI:        https://github.com/M4Gd/update-api
  * Description:       A WordPress plugin that allows you to add update api to your WordPress website. 
  * Version:           1.0.0
