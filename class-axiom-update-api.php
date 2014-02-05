@@ -155,6 +155,9 @@ class AxiomUpdateAPI {
 
 		global $post;
 
+		if( ! isset( $post ) )
+			return $template;
+
 		if ( ! isset( $this->templates[ get_post_meta( $post->ID, '_wp_page_template', true ) ] ) ) {
 			return $template;
 		} // end if
