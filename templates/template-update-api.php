@@ -140,7 +140,7 @@ if ( isset( $_GET['log'] ) ) {
 		}
 
 	} elseif ( isset( $_GET['view'] ) && 'pre' == $_GET['view'] ) {
-		echo '<pre>' . implode( "", $output ) . '</pre>';
+		echo '<pre style="white-space: pre-line;">' . implode( "", $output ) . '</pre>';
 
 	} else {
 		echo implode( "", $output ) ;
