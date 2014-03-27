@@ -139,6 +139,9 @@ if ( isset( $_GET['log'] ) ) {
 			echo $output['changelog'];
 		}
 
+	} elseif ( isset( $_GET['view'] ) && 'pre' == $_GET['view'] ) {
+		echo '<pre>' . implode( "", $output ) . '</pre>';
+
 	} else {
 		echo implode( "", $output ) ;
 	
