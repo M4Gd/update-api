@@ -92,7 +92,7 @@ if ( isset( $_GET['log'] ) ) {
 	    	// get short changelog
 	    	$excerpt 		= get_the_excerpt( $log_query->post->ID );
 	    	// get changelog single page url if requested
-	    	$permalink		= isset( $_GET['pl'] )?'<a href="' . get_permalink( $log_query->post->ID ) . '" >#</a>' :'';
+	    	$permalink		= isset( $_GET['pl'] )?'<a href="' . get_permalink( $log_query->post->ID ) . '" target="_blank" title="View full changelog" >#</a>' :'';
 
 	    	$log_content 	= "";
 
