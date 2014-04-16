@@ -5,7 +5,7 @@ global $post;
 
 
 // output forum stats in json format
-if ( isset( $_GET['forum_stats'] ) && function_exists('bbp_get_statistics') ) {
+if ( isset( $_REQUEST['forum_stats'] ) && function_exists('bbp_get_statistics') ) {
 	$stats = bbp_get_statistics();
 	echo json_encode($stats);
 	die;
@@ -54,10 +54,10 @@ function axiom_plugin_get_verified_version($version){
 
 
 
-if ( isset( $_GET['log'] ) ) {
+if ( isset( $_REQUEST['log'] ) ) {
 
 	// get changelog category slug
-	$log_cat = esc_sql( $_GET['log'] );
+	$log_cat = esc_sql( $_REQUEST['log'] );
 
     $tax_args = array('taxonomy' => 'changelog-cat', 'terms' => $log_cat, 'field' => 'slug' );
     
@@ -100,7 +100,7 @@ if ( isset( $_GET['log'] ) ) {
 	    	// get short changelog
 	    	$excerpt 		= get_the_excerpt( $log_query->post->ID );
 	    	// get changelog single page url if requested
-	    	$permalink		= isset( $_GET['pl'] )?'<a href="' . get_permalink( $log_query->post->ID ) . '" target="_blank" title="View full changelog" >#</a>' :'';
+	    	$permalink		= isset( $_REQUEST['pl'] )?'<a href="' . get_permalink( $log_query->post->ID ) . '" target="_blank" title="View full changelog" >#</a>' :'';
 
 
 	    	// store date for latest version 
@@ -111,27 +111,27 @@ if ( isset( $_GET['log'] ) ) {
 
 	    	$log_content 	= "";
 
-	    	if( isset( $_GET['latest'] )  || isset( $_GET['l'] ) ) {
+	    	if( isset( $_REQUEST['latest'] )  || isset( $_REQUEST['l'] ) ) {
 	    		$log_content	= array( 'release_date' => $release_date, 'version' => $version, 'changelog' => $excerpt );
 
 	    		$output		= $log_content;
 	    		break;
 
-	    	} elseif ( isset( $_GET['v'] ) ) {
+	    	} elseif ( isset( $_REQUEST['v'] ) ) {
 
 	    		// if version number is not passed, show an error
-	    		if ( empty( $_GET['v'] ) ) {
+	    		if ( empty( $_REQUEST['v'] ) ) {
 	    			$error[] = __( 'Please specify a version number', 'update-api' );
 	    			break;
 	    		}
-	    		if( axiom_plugin_get_verified_version( $_GET['v'] ) == $version ) {
+	    		if( axiom_plugin_get_verified_version( $_REQUEST['v'] ) == $version ) {
 		    		$log_content	= array( 'release_date' => $release_date, 'version' => $version, 'changelog' => $excerpt );
 
 		    		$output	= $log_content;
 		    		break;
 		    	}
 	    	
-	    	} elseif ( ! isset( $_GET['v'] ) ) {
+	    	} elseif ( ! isset( $_REQUEST['v'] ) ) {
 	    		$log_content .= sprintf( "Version $version / ($release_date) %s \n", $permalink );
 	    		$log_content .= sprintf( "============================%s \n", $permalink?"==":"" );
 	    		$log_content .= $excerpt . "\n\n\n";
@@ -148,9 +148,9 @@ if ( isset( $_GET['log'] ) ) {
 	if ( count( $error ) ) {
 		echo json_encode( array( 'error' => implode( ". ", $error ) ) );
 
-	} elseif( isset( $_GET['action'] ) ) {
+	} elseif( isset( $_REQUEST['action'] ) ) {
 
-		switch ($_POST['action']) {
+		switch ($_REQUEST['action']) {
 			case 'version':
 				echo $latest_version;
 				break;
@@ -173,16 +173,16 @@ if ( isset( $_GET['log'] ) ) {
 				echo 'false';
 				break;
 		}
-	
-	} elseif( isset( $_GET['format'] ) && $_GET['format'] == 'json' ) {
+
+	} elseif( isset( $_REQUEST['format'] ) && $_REQUEST['format'] == 'json' ) {
 		echo json_encode( $output );
 
-	} elseif ( isset( $_GET['v'] ) ) {
+	} elseif ( isset( $_REQUEST['v'] ) ) {
 		if( isset( $output['changelog'] ) ) {
 			echo $output['changelog'];
 		}
 
-	} elseif ( isset( $_GET['view'] ) && 'pre' == $_GET['view'] ) {
+	} elseif ( isset( $_REQUEST['view'] ) && 'pre' == $_REQUEST['view'] ) {
 		echo '<pre style="white-space: pre-line;">' . implode( "", $output ) . '</pre>';
 
 	} else {
