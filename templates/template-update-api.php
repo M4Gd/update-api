@@ -169,6 +169,7 @@ if ( isset( $_REQUEST['log'] ) ) {
 				);
 				$obj->download_link = '';
 				echo serialize( $obj );
+				break;
 			case 'license':
 				echo 'false';
 				break;
