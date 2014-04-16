@@ -168,7 +168,7 @@ if ( isset( $_REQUEST['log'] ) ) {
 			    	'changelog' => '<pre style="white-space: pre-line;">' . implode( "", $output ) . '</pre>'
 				);
 				$obj->download_link = '';
-				echo json_encode( $obj );
+				echo serialize( $obj );
 			case 'license':
 				echo 'false';
 				break;
