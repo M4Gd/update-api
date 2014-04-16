@@ -77,12 +77,20 @@ if ( isset( $_GET['log'] ) ) {
     $log_query = null;
 	$log_query = new WP_Query( $args );
 
+	// stores latest version data
+	$latest_version 	 = '';
+	$latest_release_date = '';
+	$latest_changelog	 = '';
+
+	// stores all log contents
 	$output = array();
 	$error  = array();
 
 	// loop through all changelogs
 	if ( $log_query->have_posts() ) {
+
 		while ( $log_query->have_posts() ) {
+
 			$log_query->the_post();
 			
 			// get current changelog version 
@@ -93,6 +101,13 @@ if ( isset( $_GET['log'] ) ) {
 	    	$excerpt 		= get_the_excerpt( $log_query->post->ID );
 	    	// get changelog single page url if requested
 	    	$permalink		= isset( $_GET['pl'] )?'<a href="' . get_permalink( $log_query->post->ID ) . '" target="_blank" title="View full changelog" >#</a>' :'';
+
+
+	    	// store date for latest version 
+	    	if ( empty( $latest_version ) ) 	 $latest_version 	  = $version;
+	    	if ( empty( $latest_release_date ) ) $latest_release_date = $release_date;
+	    	if ( empty( $latest_changelog ) ) 	 $latest_changelog    = $excerpt;
+
 
 	    	$log_content 	= "";
 
@@ -128,9 +143,37 @@ if ( isset( $_GET['log'] ) ) {
 		}
 	}
 
-	if ( count($error) ) {
+	
+	
+	if ( count( $error ) ) {
 		echo json_encode( array( 'error' => implode( ". ", $error ) ) );
 
+	} elseif( isset( $_GET['action'] ) ) {
+
+		switch ($_POST['action']) {
+			case 'version':
+				echo $latest_version;
+				break;
+			case 'info':
+				$obj = new stdClass();
+				$obj->slug = '';
+				$obj->plugin_name = 'plugin.php';
+				$obj->new_version = $latest_version;
+				$obj->requires = '3.0';
+				$obj->tested = '';
+				$obj->downloaded = '';
+				$obj->last_updated = $latest_release_date;
+				$obj->sections = array(
+			    	'description' => $latest_changelog,
+			    	'changelog' => '<pre style="white-space: pre-line;">' . implode( "", $output ) . '</pre>'
+				);
+				$obj->download_link = '';
+				echo json_encode( $obj );
+			case 'license':
+				echo 'false';
+				break;
+		}
+	
 	} elseif( isset( $_GET['format'] ) && $_GET['format'] == 'json' ) {
 		echo json_encode( $output );
 
