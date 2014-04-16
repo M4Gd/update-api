@@ -38,7 +38,7 @@ function axiom_plugin_get_verified_version($version){
 		// extract version numbers in array
 		$v_parts = explode( ".", $version );
 		// remove empty indexes in array
-		$v_parts = array_filter($v_parts, 'strlen');
+		$v_parts = array_filter($v_parts);
 		// version number contains 3 integer. count the missed nums
 		$less 	 = 3 - count($v_parts);
 		// add "0" if version number count is less that 3
