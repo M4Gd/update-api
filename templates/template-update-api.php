@@ -81,6 +81,7 @@ if ( isset( $_REQUEST['log'] ) ) {
 	$latest_version 	 = '';
 	$latest_release_date = '';
 	$latest_changelog	 = '';
+	$latest_tested	     = '';
 
 	// stores all log contents
 	$output = array();
@@ -101,12 +102,14 @@ if ( isset( $_REQUEST['log'] ) ) {
 	    	$excerpt 		= get_the_excerpt( $log_query->post->ID );
 	    	// get changelog single page url if requested
 	    	$permalink		= isset( $_REQUEST['pl'] )?'<a href="' . get_permalink( $log_query->post->ID ) . '" target="_blank" title="View full changelog" >#</a>' :'';
-
+	    	// get current changelog compatibility version
+	    	$compatibility_version 	= get_post_meta( $log_query->post->ID, 'compatibility_version', true );
 
 	    	// store date for latest version 
 	    	if ( empty( $latest_version ) ) 	 $latest_version 	  = $version;
 	    	if ( empty( $latest_release_date ) ) $latest_release_date = $release_date;
 	    	if ( empty( $latest_changelog ) ) 	 $latest_changelog    = $excerpt;
+	    	if ( empty( $latest_tested ) ) 	     $latest_tested       = $compatibility_version;
 
 
 	    	$log_content 	= "";
@@ -155,21 +158,26 @@ if ( isset( $_REQUEST['log'] ) ) {
 				echo $latest_version;
 				break;
 			case 'info':
-				$obj = new stdClass();
-				$obj->slug = '';
-				$obj->plugin_name = 'plugin.php';
-				$obj->new_version = $latest_version;
-				$obj->requires = '3.0';
-				$obj->tested = '';
-				$obj->downloaded = '';
-				$obj->last_updated = $latest_release_date;
-				$obj->sections = array(
-			    	'description' => $latest_changelog,
-			    	'changelog' => '<pre style="white-space: pre-line;">' . implode( "", $output ) . '</pre>'
-				);
-				$obj->download_link = '';
-				echo serialize( $obj );
+				
+				$info                           = new stdClass;
+	            $info->name                     = '';
+	            $info->slug                     = '';
+	            $info->version                  = '';
+	            $info->new_version 			   = $latest_version;
+	            $info->author                   = '';
+	            $info->requires                 = '';
+	            $info->tested                   = $latest_tested;
+	            $info->last_updated             = $latest_release_date;
+	            $info->homepage                 = '';
+	            $info->sections['description']  = $latest_changelog;
+	            
+	            $info->sections['changelog']    = '<pre>' . implode( '', $output ) . '</pre>';
+	            $info->sections['FAQ']          = '';
+	            $info->download_link            = '';
+	            
+	            echo serialize( $info );
 				break;
+
 			case 'license':
 				echo 'false';
 				break;
