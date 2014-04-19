@@ -174,7 +174,7 @@ if ( isset( $_REQUEST['log'] ) ) {
 	            $info->sections['changelog']    = '<pre>' . implode( '', $output ) . '</pre>';
 	            $info->sections['FAQ']          = '';
 	            $info->download_link            = '';
-	            
+
 	            echo serialize( $info );
 				break;
 
@@ -192,7 +192,7 @@ if ( isset( $_REQUEST['log'] ) ) {
 		}
 
 	} elseif ( isset( $_REQUEST['view'] ) && 'pre' == $_REQUEST['view'] ) {
-		echo '<pre style="white-space: pre-line;">' . implode( "", $output ) . '</pre>';
+		echo '<pre style="white-space: pre-line; font-size: 12px;">' . implode( "", $output ) . '</pre>';
 
 	} else {
 		echo implode( "", $output ) ;
