@@ -17,7 +17,7 @@ class AxiomUpdateAPI {
      *
      * @var     string
      */
-    const VERSION = '1.1.0';
+    const VERSION = '1.4.4';
 
     /**
      * Unique identifier for the plugin.
