@@ -12,6 +12,16 @@ if ( isset( $_REQUEST['forum_stats'] ) && function_exists('bbp_get_statistics') 
 }
 
 
+if ( ! isset( $_REQUEST['log'] ) ){ 
+	return;
+
+} elseif ( isset( $_REQUEST['view'] ) && 'image' == $_REQUEST['view'] ) {
+
+	$upload_dir     = wp_upload_dir();
+	$log_image_path = $upload_dir['baseurl'] . '/changelog/' . $_REQUEST['log'] . '.png';
+	return file_exists( $log_image_path ) ? $log_image_path : '';
+}
+
 
 /**
  * Returns version number for changelog by id
@@ -34,7 +44,7 @@ function axiom_get_changelog_version($post_id){
  */
 function axiom_plugin_get_verified_version($version){
 
-	if( strlen($version) < 5 ) {
+	if( strlen( $version ) < 5 ) {
 		// extract version numbers in array
 		$v_parts = explode( ".", $version );
 		// remove empty indexes in array
@@ -59,94 +69,106 @@ if ( isset( $_REQUEST['log'] ) ) {
 	// get changelog category slug
 	$log_cat = esc_sql( $_REQUEST['log'] );
 
-    $tax_args = array('taxonomy' => 'changelog-cat', 'terms' => $log_cat, 'field' => 'slug' );
-    
-    // create wp_query to get all logs
-    $args = array(
-      'post_type'			=> 'changelog',
-      'orderby'				=> "menu_order date",
-      'post_status'			=> 'publish',
-      'posts_per_page'		=> -1,
-      'ignore_sticky_posts'	=> 1,
-      'paged'				=> 1,
-      'tax_query'			=> array( $tax_args )
-    );
-
-
-    // The Query
-    $log_query = null;
-	$log_query = new WP_Query( $args );
-
-	// stores latest version data
-	$latest_version 	 = '';
-	$latest_release_date = '';
-	$latest_changelog	 = '';
-	$latest_tested	     = '';
-
 	// stores all log contents
-	$output = array();
+	$output = get_transient( 'avt_changelog_output_' . $log_cat );
 	$error  = array();
 
-	// loop through all changelogs
-	if ( $log_query->have_posts() ) {
+	if( false === $output || isset( $_REQUEST['flush_log'] ) ){
 
-		while ( $log_query->have_posts() ) {
+		$output = array();
 
-			$log_query->the_post();
-			
-			// get current changelog version 
-	    	$version 		= axiom_get_changelog_version( $log_query->post->ID );
-	    	// get current changelog release date
-	    	$release_date 	= get_post_meta( $log_query->post->ID, 'release_date', true );
-	    	// get short changelog
-	    	$excerpt 		= get_the_excerpt( $log_query->post->ID );
-	    	// get changelog single page url if requested
-	    	$permalink		= isset( $_REQUEST['pl'] )?'<a href="' . get_permalink( $log_query->post->ID ) . '" target="_blank" title="View full changelog" >#</a>' :'';
-	    	// get current changelog compatibility version
-	    	$compatibility_version 	= get_post_meta( $log_query->post->ID, 'compatibility_version', true );
+		// get limit for outputing the number of changelog versions
+		$log_limit = isset( $_REQUEST['limit'] ) ? (int) $_REQUEST['limit'] : -1;
 
-	    	// store date for latest version 
-	    	if ( empty( $latest_version ) ) 	 $latest_version 	  = $version;
-	    	if ( empty( $latest_release_date ) ) $latest_release_date = $release_date;
-	    	if ( empty( $latest_changelog ) ) 	 $latest_changelog    = $excerpt;
-	    	if ( empty( $latest_tested ) ) 	     $latest_tested       = $compatibility_version;
+	    $tax_args = array('taxonomy' => 'changelog-cat', 'terms' => $log_cat, 'field' => 'slug' );
+	    
+	    // create wp_query to get all logs
+	    $args = array(
+	      'post_type'			=> 'changelog',
+	      'orderby'				=> "menu_order date",
+	      'post_status'			=> 'publish',
+	      'posts_per_page'		=> $log_limit,
+	      'ignore_sticky_posts'	=> 1,
+	      'paged'				=> 1,
+	      'tax_query'			=> array( $tax_args )
+	    );
 
 
-	    	$log_content 	= "";
+	    // The Query
+	    $log_query = null;
+		$log_query = new WP_Query( $args );
 
-	    	if( isset( $_REQUEST['latest'] )  || isset( $_REQUEST['l'] ) ) {
-	    		$log_content	= array( 'release_date' => $release_date, 'version' => $version, 'changelog' => $excerpt );
+		// stores latest version data
+		$latest_version 	 = '';
+		$latest_release_date = '';
+		$latest_changelog	 = '';
+		$latest_tested	     = '';
 
-	    		$output		= $log_content;
-	    		break;
+		
 
-	    	} elseif ( isset( $_REQUEST['v'] ) ) {
+		// loop through all changelogs
+		if ( $log_query->have_posts() ) {
 
-	    		// if version number is not passed, show an error
-	    		if ( empty( $_REQUEST['v'] ) ) {
-	    			$error[] = __( 'Please specify a version number', 'update-api' );
-	    			break;
-	    		}
-	    		if( axiom_plugin_get_verified_version( $_REQUEST['v'] ) == $version ) {
+			while ( $log_query->have_posts() ) {
+
+				$log_query->the_post();
+				
+				// get current changelog version 
+		    	$version 		= axiom_get_changelog_version( $log_query->post->ID );
+		    	// get current changelog release date
+		    	$release_date 	= get_post_meta( $log_query->post->ID, 'release_date', true );
+		    	// get short changelog
+		    	$excerpt 		= get_the_excerpt( $log_query->post->ID );
+		    	// get changelog single page url if requested
+		    	$permalink		= isset( $_REQUEST['pl'] ) ? '<a href="' . get_permalink( $log_query->post->ID ) . '" target="_blank" title="View full changelog" >#</a>' :'';
+		    	// get current changelog compatibility version
+		    	$compatibility_version 	= get_post_meta( $log_query->post->ID, 'compatibility_version', true );
+
+		    	// store date for latest version 
+		    	if ( empty( $latest_version ) ) 	 $latest_version 	  = $version;
+		    	if ( empty( $latest_release_date ) ) $latest_release_date = $release_date;
+		    	if ( empty( $latest_changelog ) ) 	 $latest_changelog    = $excerpt;
+		    	if ( empty( $latest_tested ) ) 	     $latest_tested       = $compatibility_version;
+
+
+		    	$log_content 	= "";
+
+		    	if( isset( $_REQUEST['latest'] )  || isset( $_REQUEST['l'] ) ) {
 		    		$log_content	= array( 'release_date' => $release_date, 'version' => $version, 'changelog' => $excerpt );
 
-		    		$output	= $log_content;
+		    		$output		= $log_content;
 		    		break;
-		    	}
-	    	
-	    	} elseif ( ! isset( $_REQUEST['v'] ) ) {
-	    		$log_content .= sprintf( "Version $version / ($release_date) %s \n", $permalink );
-	    		$log_content .= sprintf( "============================%s \n", $permalink?"==":"" );
-	    		$log_content .= $excerpt . "\n\n\n";
 
-	    		$output[]	= $log_content;
+		    	} elseif ( isset( $_REQUEST['v'] ) ) {
 
-	    	} 
+		    		// if version number is not passed, show an error
+		    		if ( empty( $_REQUEST['v'] ) ) {
+		    			$error[] = __( 'Please specify a version number', 'update-api' );
+		    			break;
+		    		}
+		    		if( axiom_plugin_get_verified_version( $_REQUEST['v'] ) == $version ) {
+			    		$log_content	= array( 'release_date' => $release_date, 'version' => $version, 'changelog' => $excerpt );
 
+			    		$output	= $log_content;
+			    		break;
+			    	}
+		    	
+		    	} elseif ( ! isset( $_REQUEST['v'] ) ) {
+		    		$log_content .= sprintf( "Version $version / ($release_date) %s \n", $permalink );
+		    		$log_content .= sprintf( "============================%s \n", $permalink?"==":"" );
+		    		$log_content .= $excerpt . "\n\n\n";
+
+		    		$output[]	= $log_content;
+
+		    	} 
+
+			}
 		}
-	}
 
+		set_transient( 'avt_changelog_output_' . $log_cat , $output, 0.5 * HOUR_IN_SECONDS );
+	}
 	
+
 	
 	if ( count( $error ) ) {
 		echo json_encode( array( 'error' => implode( ". ", $error ) ) );
@@ -202,6 +224,3 @@ if ( isset( $_REQUEST['log'] ) ) {
 	// Restore original Post Data
 	wp_reset_postdata();
 }
-
-
-?>
