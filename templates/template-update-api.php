@@ -12,6 +12,17 @@ if ( isset( $_REQUEST['forum_stats'] ) && function_exists('bbp_get_statistics') 
 }
 
 
+if ( ! isset( $_REQUEST['log'] ) ){ 
+	return;
+
+} elseif ( isset( $_REQUEST['view'] ) && 'image' == $_REQUEST['view'] ) {
+
+	$upload_dir     = wp_upload_dir();
+	$log_image_path = $upload_dir['baseurl'] . '/changelog/' . $_REQUEST['log'] . '.png';
+	if( file_exists( $log_image_path ) )
+		return $log_image_path;
+}
+
 
 /**
  * Returns version number for changelog by id
@@ -34,7 +45,7 @@ function axiom_get_changelog_version($post_id){
  */
 function axiom_plugin_get_verified_version($version){
 
-	if( strlen($version) < 5 ) {
+	if( strlen( $version ) < 5 ) {
 		// extract version numbers in array
 		$v_parts = explode( ".", $version );
 		// remove empty indexes in array
@@ -59,6 +70,9 @@ if ( isset( $_REQUEST['log'] ) ) {
 	// get changelog category slug
 	$log_cat = esc_sql( $_REQUEST['log'] );
 
+	// get limit for outputing the number of changelog versions
+	$log_limit = isset( $_REQUEST['limit'] ) ? (int) $_REQUEST['limit'] : -1;
+
     $tax_args = array('taxonomy' => 'changelog-cat', 'terms' => $log_cat, 'field' => 'slug' );
     
     // create wp_query to get all logs
@@ -66,7 +80,7 @@ if ( isset( $_REQUEST['log'] ) ) {
       'post_type'			=> 'changelog',
       'orderby'				=> "menu_order date",
       'post_status'			=> 'publish',
-      'posts_per_page'		=> -1,
+      'posts_per_page'		=> $log_limit,
       'ignore_sticky_posts'	=> 1,
       'paged'				=> 1,
       'tax_query'			=> array( $tax_args )
