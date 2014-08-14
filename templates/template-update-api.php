@@ -19,8 +19,7 @@ if ( ! isset( $_REQUEST['log'] ) ){
 
 	$upload_dir     = wp_upload_dir();
 	$log_image_path = $upload_dir['baseurl'] . '/changelog/' . $_REQUEST['log'] . '.png';
-	if( file_exists( $log_image_path ) )
-		return $log_image_path;
+	return file_exists( $log_image_path ) ? $log_image_path : '';
 }
 
 
