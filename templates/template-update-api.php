@@ -73,7 +73,7 @@ if ( isset( $_REQUEST['log'] ) ) {
 	$output = get_transient( 'avt_changelog_output_' . $log_cat );
 	$error  = array();
 
-	if( false === $output || isset( $_REQUEST['flush_log'] ) ){
+	if( false === $output || isset( $_REQUEST['flush_log'] ) || isset( $_REQUEST['live'] ) ){
 
 		$output = array();
 
@@ -164,8 +164,9 @@ if ( isset( $_REQUEST['log'] ) ) {
 
 			}
 		}
-
-		set_transient( 'avt_changelog_output_' . $log_cat , $output, 0.5 * HOUR_IN_SECONDS );
+		if( ! isset( $_REQUEST['live'] ) ){
+			set_transient( 'avt_changelog_output_' . $log_cat , $output, 0.5 * HOUR_IN_SECONDS );
+		}
 	}
 	
 
