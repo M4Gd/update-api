@@ -118,7 +118,7 @@ if ( isset( $_REQUEST['log'] ) ) {
 		    	// get current changelog release date
 		    	$release_date 	= get_post_meta( $log_query->post->ID, 'release_date', true );
 		    	// get short changelog
-		    	$excerpt 		= get_the_excerpt( $log_query->post->ID );
+		    	$excerpt 		= $log_query->post->post_excerpt;
 		    	// get changelog single page url if requested
 		    	$permalink		= isset( $_REQUEST['pl'] ) ? '<a href="' . get_permalink( $log_query->post->ID ) . '" target="_blank" title="View full changelog" >#</a>' :'';
 		    	// get current changelog compatibility version
