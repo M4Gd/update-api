@@ -1,4 +1,8 @@
 
+
+  Note: Further development of this project moved to our private repo
+
+
 ## Installation
 
 ### Using The WordPress Dashboard
